@@ -13,12 +13,14 @@ public:
       void check_SMS_command(String msg_str);
       void run_USSD(String info);
       String handle_AT_CMD(String cmd);
+      String network_name();
 
 private:
       void init();
       bool is_GSM_Module();
       bool SIM_Setup();
       bool pin_status();
+      bool is_network_connected();
 };
 
 #endif

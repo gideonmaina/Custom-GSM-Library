@@ -132,7 +132,6 @@ void GSM::check_SMS_command(String msg_str)
 {
   int index_start = msg_str.indexOf("CMD_TYPE:");
   int index_end = msg_str.indexOf("CMD_END");
-  int check = index_start * index_end;
 
   if (index_start == -1 || index_end == -1)
   {
@@ -209,7 +208,7 @@ int GSM::arr_size(String *str)
 {
   int count = 0;
   //  Serial.println("Calculating size of array ...\n\n");
-  while (str[count] != '\0')
+  while (str[count] != "\0")
   {
     count++;
 
@@ -219,6 +218,69 @@ int GSM::arr_size(String *str)
     //   Serial.println(count);
     // }
   }
-
+  // Serial.println("Size of string array: ");
+  // Serial.println(count);
   return count;
+}
+
+/***************
+ * Check if GSM is connected to network
+ *
+ ************/
+
+bool GSM::is_network_connected()
+{
+  // AT+CREG? should return an OK response if connected to a network
+
+  // ToDO: Test the different CREG modes: 0,1 and 3
+
+  String res = handle_AT_CMD("AT+CREG?");
+  res.trim();
+
+  int OK = res.indexOf("OK");
+
+  if (OK == -1)
+    return false;
+
+  return true;
+}
+
+/****************
+ * Get registered network / service prodiver name
+ * AT+COPS? return a network name if module is registered to a network.
+ * Example of a response
+ *    AT+COPS?
+ *    +COPS: 0,0,"Safaricom"
+ *
+ *    OK
+ ****************/
+
+String GSM::network_name()
+{
+
+  if (!is_network_connected())
+    return "Not registered to network";
+
+  String res = handle_AT_CMD("AT+COPS");
+  int OK = res.indexOf("OK");
+
+  if (OK == -1)
+  {
+    String msg = "Network name not found";
+    // Serial.println(msg);
+    return msg;
+  };
+
+  // Check for first and last instances of a double quote
+  int start_index = res.indexOf("\"");
+  int last_index = res.lastIndexOf("\"");
+
+  if (start_index == -1 || last_index == -1)
+  {
+    Serial.println("Message string does not satisfy all subtring constraints");
+  }
+  // Otherwise, still send the message string
+  res = res.substring(start_index + 1, last_index);
+  // Serial.println(res);
+  return res;
 }
