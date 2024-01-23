@@ -284,3 +284,54 @@ String GSM::network_name()
   // Serial.println(res);
   return res;
 }
+
+/*******
+ *
+ * Config GPRS
+ */
+
+bool GSM::gprs_config()
+{
+  String BEARER_SETTING = "AT+SAPBR=3,1,";
+  String contype = BEARER_SETTING + "CONTYPE,GPRS";
+  String res = handle_AT_CMD(contype);
+  if (res.indexOf("OK") == -1)
+    return false;
+
+  // Set APN settings
+
+  if (GSM_APN != "")
+  {
+    String set_APN = BEARER_SETTING + "APN," + GSM_APN;
+    String res = handle_AT_CMD(set_APN);
+    if (res.indexOf("OK") == -1)
+    {
+      Serial.println("Error setting bearer APN");
+      return false;
+    };
+  }
+
+  if (GSM_USER != "")
+  {
+    String set_USER = BEARER_SETTING + "USER," + GSM_USER;
+    String res = handle_AT_CMD(set_USER);
+    if (res.indexOf("OK") == -1)
+    {
+      Serial.println("Error setting bearer USER");
+      return false;
+    };
+  }
+
+  if (GSM_PWD != "")
+  {
+    String set_PWD = BEARER_SETTING + "PWD," + GSM_PWD;
+    String res = handle_AT_CMD(set_PWD);
+    if (res.indexOf("OK") == -1)
+    {
+      Serial.println("Error setting bearer PASSWORD");
+      return false;
+    };
+  }
+
+  return true;
+}

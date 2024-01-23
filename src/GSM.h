@@ -21,6 +21,7 @@ private:
       bool SIM_Setup();
       bool pin_status();
       bool is_network_connected();
+      bool gprs_config();
 };
 
 #endif
