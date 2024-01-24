@@ -14,6 +14,8 @@ public:
       void run_USSD(String info);
       String handle_AT_CMD(String cmd);
       String network_name();
+      void HTTP_GET(String URL);
+      void GPRS_TERM();
 
 private:
       void init();
@@ -22,6 +24,7 @@ private:
       bool pin_status();
       bool is_network_connected();
       bool gprs_config();
+      void GPRS_INIT();
 };
 
 #endif
