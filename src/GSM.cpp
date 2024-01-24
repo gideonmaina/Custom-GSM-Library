@@ -344,11 +344,16 @@ void GSM::GPRS_INIT()
   handle_AT_CMD("AT+SAPBR=1,1"); // Enable GPRS
   handle_AT_CMD("AT+HTTPINIT");
   handle_AT_CMD("AT+HTTPPARA=CID,1"); // CARRIER PROFILE
+
+  _GPRS_ACTIVE = true;
 }
 
 //  HTTP GET REQUEST
 void GSM::HTTP_GET(String URL)
 {
+  if (!_GPRS_ACTIVE)
+    GPRS_INIT();
+
   handle_AT_CMD("AT+HTTPPARA=URL," + URL);
   handle_AT_CMD("AT+HTTPACTION=0"); // GET
   handle_AT_CMD("AT+HTTPREAD");
@@ -361,4 +366,6 @@ void GSM::GPRS_TERM()
 
   handle_AT_CMD("AT+HTTPTERM");  // Terminate HTTP service
   handle_AT_CMD("AT+SAPBR=1,1"); // Terminate GPRS service
+
+  _GPRS_ACTIVE = false;
 }

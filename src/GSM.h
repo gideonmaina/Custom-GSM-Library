@@ -25,6 +25,7 @@ private:
       bool is_network_connected();
       bool gprs_config();
       void GPRS_INIT();
+      bool _GPRS_ACTIVE = false;
 };
 
 #endif
