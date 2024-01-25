@@ -3,16 +3,13 @@
 
 #include "GSM_config.h"
 
-// Function declarations
-void run_USSD(String info);
-void check_SMS_command(String msg_str);
-
-SoftwareSerial GSM_Serial(GSM_TX, GSM_RX); // Connect TX and RX pins of GSM to RX and TX pins of microcontroller respectively
+SoftwareSerial *GSM_Serial; // Create pointer to  SoftwareSerial class
 
 GSM::GSM()
 {
+  GSM_Serial = new SoftwareSerial(GSM_TX, GSM_RX); // Connect TX and RX pins of GSM to RX and TX pins of microcontroller respectively
 
-  GSM_Serial.begin(9600);
+  GSM_Serial->begin(9600);
   // init();
 }
 
@@ -20,17 +17,22 @@ GSM::GSM()
 
 String GSM::handle_AT_CMD(String cmd)
 {
-  while (Serial.available() > 0)
-  {
-    Serial.read();
-  }
-  String RESPONSE = "";
-  GSM_Serial.println(cmd);
-  delay(100); // Avoid putting any code that might delay the receiving all contents from the serial buffer as it is quickly filled up
 
-  while (GSM_Serial.available() > 0)
+  // while (Serial.available() > 0) // ToDo: remove this while loop
+  // {
+  //   Serial.read();
+  // }
+
+  String RESPONSE = "";
+  Serial.print("\nReceived AT CMD: ");
+  Serial.print(cmd);
+  GSM_Serial->println(cmd);
+  delay(2000); // Avoid putting any code that might delay the receiving all contents from the serial buffer as it is quickly filled up
+
+  while (GSM_Serial->available() > 0)
   {
-    RESPONSE += GSM_Serial.readString();
+    Serial.print(".");
+    RESPONSE += GSM_Serial->readString();
   }
   Serial.println();
   Serial.println("GSM RESPONSE:");
@@ -365,7 +367,7 @@ void GSM::GPRS_TERM()
 {
 
   handle_AT_CMD("AT+HTTPTERM");  // Terminate HTTP service
-  handle_AT_CMD("AT+SAPBR=1,1"); // Terminate GPRS service
+  handle_AT_CMD("AT+SAPBR=0,1"); // Terminate GPRS service
 
   _GPRS_ACTIVE = false;
 }
